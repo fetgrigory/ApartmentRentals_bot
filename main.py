@@ -9,18 +9,15 @@ Ending //
 # Installing the necessary libraries
 import os
 import sqlite3
-import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import ReplyKeyboardMarkup
 import datetime
+import asyncio
+from aiogram import Bot, types
+from aiogram.dispatcher import Dispatcher
+from aiogram.types import ReplyKeyboardMarkup
 from dotenv import load_dotenv
-
 load_dotenv()  # Load environment variables from a .env file.
-
-# Initialize telegram bot, dispatcher, and database connection.
 bot = Bot(os.getenv('TOKEN'))
 dp = Dispatcher(bot=bot)
-
 
 conn = sqlite3.connect('catalog.db')
 cursor = conn.cursor()
@@ -35,7 +32,7 @@ conn.commit()
 
 USER_DATA = {}
 questions = [
-     "Загрузите фото квартиры:",
+    "Загрузите фото квартиры:",
     "Введите описание квартиры:",
     "Введите цену:"
 ]
@@ -74,10 +71,21 @@ async def get_apartment_data_handler(message: types.Message):
 async def ask_next_question(message: types.Message):
     if len(USER_DATA) < len(questions):
         question = questions[len(USER_DATA)]
-        await message.answer(question)
+        if question.startswith("Загрузите фото"):
+            await message.answer(question, parse_mode="html")
+        else:
+            await message.answer(question)
         USER_DATA['current_question'] = question
     else:
         await save_apartment_data(message)
+
+@dp.message_handler(content_types=types.ContentType.PHOTO)
+async def handle_photo(message: types.Message):
+    if 'current_question' in USER_DATA:
+        file_id = message.photo[-1].file_id
+        USER_DATA[USER_DATA['current_question']] = file_id
+        del USER_DATA['current_question']
+        await ask_next_question(message)
 
 @dp.message_handler()
 async def add_apartment(message: types.Message):
