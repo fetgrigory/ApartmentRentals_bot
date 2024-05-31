@@ -102,7 +102,7 @@ async def get_apartment_data(message: types.Message):
 
     result = ''
     for record in data:
-        result += f"Дата: {record[1]}\nОтжимания: {record[2]}\nОписание квартиры: {record[3]}\nЦена: {record[4]}\n\n"
+        result += f"Дата: {record[1]}\nФото: {record[2]}\nОписание квартиры: {record[3]}\nЦена: {record[4]}\n\n"
 
     await bot.send_message(message.chat.id, f"\n{result}")
 
