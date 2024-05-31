@@ -18,9 +18,6 @@ import math
 load_dotenv()  # Load environment variables from a .env file.
 
 
-
-load_dotenv()  # Load environment variables from a .env file
-
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot=bot)
 
