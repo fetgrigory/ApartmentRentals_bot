@@ -26,14 +26,18 @@ cursor = conn.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS catalog
                (id INTEGER PRIMARY KEY AUTOINCREMENT,
                date VARCHAR(50),
-              photo VARCHAR(50),
+               photo1 VARCHAR(50),
+               photo2 VARCHAR(50),
+               photo3 VARCHAR(50),
                description VARCHAR(50),
                price VARCHAR(50))''')
 conn.commit()
 
 USER_DATA = {}
 questions = [
-    "Загрузите фото квартиры:",
+    "Загрузите первое фото квартиры:",
+    "Загрузите второе фото квартиры:",
+    "Загрузите третье фото квартиры:",
     "Введите описание квартиры:",
     "Введите цену:"
 ]
@@ -98,8 +102,15 @@ async def add_apartment(message: types.Message):
 
 async def save_apartment_data(message: types.Message):
     current_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    data = [current_date, USER_DATA.get(questions[0], ""), USER_DATA.get(questions[1], ""), USER_DATA.get(questions[2], "")]
-    cursor.execute("INSERT INTO catalog (date, photo, description, price) VALUES (?, ?, ?, ?)", data)
+    data = [
+        current_date,
+        USER_DATA.get(questions[0], ""),
+        USER_DATA.get(questions[1], ""),
+        USER_DATA.get(questions[2], ""),
+        USER_DATA.get(questions[3], ""),
+        USER_DATA.get(questions[4], "")
+    ]
+    cursor.execute("INSERT INTO catalog (date, photo1, photo2, photo3, description, price) VALUES (?, ?, ?, ?, ?, ?)", data)
     conn.commit()
     await message.answer("Данные о квартире успешно сохранены!")
 
@@ -110,8 +121,11 @@ async def get_apartment_data(message: types.Message):
     conn.close()
 
     for record in data:
-        photo_id = record[2]
-        await bot.send_photo(message.chat.id, photo_id, f"Описание квартиры: {record[3]}\nЦена: {record[4]}")
+        photo_id1, photo_id2, photo_id3 = record[2], record[3], record[4]
+        await bot.send_photo(message.chat.id, photo_id1, "Первое фото квартиры")
+        await bot.send_photo(message.chat.id, photo_id2, "Второе фото квартиры")
+        await bot.send_photo(message.chat.id, photo_id3, "Третье фото квартиры")
+        await message.answer(f"Описание квартиры: {record[5]}\nЦена: {record[6]}")
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
