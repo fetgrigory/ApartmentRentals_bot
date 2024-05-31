@@ -111,7 +111,7 @@ async def get_apartment_data(message: types.Message):
 
     for record in data:
         photo_id = record[2]
-        await bot.send_photo(message.chat.id, photo_id, f"Дата: {record[1]}\nОписание квартиры: {record[3]}\nЦена: {record[4]}")
+        await bot.send_photo(message.chat.id, photo_id, f"Описание квартиры: {record[3]}\nЦена: {record[4]}")
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
