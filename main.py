@@ -9,10 +9,9 @@ Ending //
 # Installing the necessary libraries
 import os
 import sqlite3
-import datetime
 import asyncio
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
+import datetime
+from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup
 from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from a .env file.
@@ -118,14 +117,20 @@ async def get_apartment_data(message: types.Message):
     conn = sqlite3.connect('catalog.db')
     cursor.execute("SELECT * FROM catalog")
     data = cursor.fetchall()
-    conn.close()
 
     for record in data:
-        photo_id1, photo_id2, photo_id3 = record[2], record[3], record[4]
-        await bot.send_photo(message.chat.id, photo_id1, "Первое фото квартиры")
-        await bot.send_photo(message.chat.id, photo_id2, "Второе фото квартиры")
-        await bot.send_photo(message.chat.id, photo_id3, "Третье фото квартиры")
-        await message.answer(f"Описание квартиры: {record[5]}\nЦена: {record[6]}")
+        photos_info = []
+        for i in range(2, 5):
+            photo_id = record[i]
+            photos_info.append(types.InputMediaPhoto(media=photo_id, caption=f"Фото квартиры"))
+
+        description = record[5]
+        price = record[6]
+
+        message_text = f"Описание квартиры: {description}\nЦена: {price}"
+
+        await bot.send_media_group(message.chat.id, media=photos_info)
+        await message.answer(message_text)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
