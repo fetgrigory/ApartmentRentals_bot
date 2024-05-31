@@ -135,10 +135,7 @@ async def get_next_apartment_data(message: types.Message):
         message_text = f"Описание квартиры: {description}\nЦена: {price}"
 
         keyboard = InlineKeyboardMarkup()
-        if index > 0:
-            keyboard.add(InlineKeyboardButton("Предыдущая", callback_data="prev"))
-        if index < len(data) - 1:
-            keyboard.add(InlineKeyboardButton("Следующая", callback_data="next"))
+        keyboard.add(InlineKeyboardButton("Предыдущая", callback_data="prev"), InlineKeyboardButton("Следующая", callback_data="next"))
 
         await bot.send_media_group(message.chat.id, media=photos_info)
         await message.answer(message_text, reply_markup=keyboard)
