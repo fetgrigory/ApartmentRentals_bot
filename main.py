@@ -16,6 +16,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardMarkup
 from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from a .env file.
+
 bot = Bot(os.getenv('TOKEN'))
 dp = Dispatcher(bot=bot)
 
@@ -108,12 +109,9 @@ async def get_apartment_data(message: types.Message):
     data = cursor.fetchall()
     conn.close()
 
-    result = ''
     for record in data:
-        result += f"Дата: {record[1]}\nФото: {record[2]}\nОписание квартиры: {record[3]}\nЦена: {record[4]}\n\n"
-
-    await bot.send_message(message.chat.id, f"\n{result}")
-
+        photo_id = record[2]
+        await bot.send_photo(message.chat.id, photo_id, f"Дата: {record[1]}\nОписание квартиры: {record[3]}\nЦена: {record[4]}")
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
