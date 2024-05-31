@@ -43,7 +43,7 @@ questions = [
     "Введите цену:"
 ]
 
-PAGE_SIZE = 1  # Количество записей на странице
+PAGE_SIZE = 1
 CURRENT_PAGE = 0
 
 @dp.message_handler(commands=['start'])
