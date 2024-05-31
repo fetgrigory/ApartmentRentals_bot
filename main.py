@@ -8,15 +8,17 @@ Ending //
 '''
 # Installing the necessary libraries
 import os
-import sqlite3
 import asyncio
-import datetime
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import ReplyKeyboardMarkup
 from dotenv import load_dotenv
+from aiogram import Bot, Dispatcher, types
+from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+import sqlite3
+import datetime
 load_dotenv()  # Load environment variables from a .env file.
 
-bot = Bot(os.getenv('TOKEN'))
+
+
+bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot=bot)
 
 conn = sqlite3.connect('catalog.db')
@@ -70,7 +72,7 @@ async def add_data_handler(message: types.Message):
 
 @dp.message_handler(lambda message: message.text == "Каталог")
 async def get_apartment_data_handler(message: types.Message):
-    await get_apartment_data(message)
+    await get_next_apartment_data(message)
 
 async def ask_next_question(message: types.Message):
     if len(USER_DATA) < len(questions):
@@ -113,12 +115,15 @@ async def save_apartment_data(message: types.Message):
     conn.commit()
     await message.answer("Данные о квартире успешно сохранены!")
 
-async def get_apartment_data(message: types.Message):
+async def get_next_apartment_data(message: types.Message):
     conn = sqlite3.connect('catalog.db')
     cursor.execute("SELECT * FROM catalog")
     data = cursor.fetchall()
 
-    for record in data:
+    index = USER_DATA.get('apartment_index', 0)
+    if index < len(data):
+        record = data[index]
+
         photos_info = []
         for i in range(2, 5):
             photo_id = record[i]
@@ -129,8 +134,33 @@ async def get_apartment_data(message: types.Message):
 
         message_text = f"Описание квартиры: {description}\nЦена: {price}"
 
+        keyboard = InlineKeyboardMarkup()
+        if index > 0:
+            keyboard.add(InlineKeyboardButton("Предыдущая", callback_data="prev"))
+        if index < len(data) - 1:
+            keyboard.add(InlineKeyboardButton("Следующая", callback_data="next"))
+
         await bot.send_media_group(message.chat.id, media=photos_info)
-        await message.answer(message_text)
+        await message.answer(message_text, reply_markup=keyboard)
+
+        USER_DATA['apartment_index'] = index
+
+@dp.callback_query_handler(text="prev")
+async def prev_apartment(callback_query: types.CallbackQuery):
+    if 'apartment_index' in USER_DATA:
+        index = USER_DATA['apartment_index']
+        USER_DATA['apartment_index'] = max(index - 1, 0)
+        await get_next_apartment_data(callback_query.message)
+
+@dp.callback_query_handler(text="next")
+async def next_apartment(callback_query: types.CallbackQuery):
+    if 'apartment_index' in USER_DATA:
+        index = USER_DATA['apartment_index']
+        conn = sqlite3.connect('catalog.db')
+        cursor.execute("SELECT COUNT(*) FROM catalog")
+        total_records = cursor.fetchone()[0]
+        USER_DATA['apartment_index'] = min(index + 1, total_records - 1)
+        await get_next_apartment_data(callback_query.message)
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
