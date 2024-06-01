@@ -49,10 +49,10 @@ async def start(message: types.Message):
     USER_DATA.clear()
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     if message.from_user.id == int(os.getenv('ADMIN_ID')):
-        keyboard.row("Админ-панель", "Каталог")
+        keyboard.row("Админ-панель", "🛍Каталог")
         keyboard.row("Наш сайт")
     else:
-        keyboard.add("Каталог")
+        keyboard.add("🛍Каталог")
         keyboard.add("Наш сайт")
 
     me = await bot.get_me()
@@ -71,7 +71,7 @@ async def admin_panel_handler(message: types.Message):
 async def add_data_handler(message: types.Message):
     await ask_next_question(message)
 
-@dp.message_handler(lambda message: message.text == "Каталог")
+@dp.message_handler(lambda message: message.text == "🛍Каталог")
 async def get_apartment_data_handler(message: types.Message):
     await get_next_apartment_data(message)
 
@@ -136,7 +136,7 @@ async def get_next_apartment_data(message: types.Message):
         message_text = f"Описание квартиры: {description}\nЦена: {price}"
 
         keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("Предыдущая", callback_data="prev"), InlineKeyboardButton("Оплатить", callback_data="pay"), InlineKeyboardButton("Следующая", callback_data="next"))
+        keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"), InlineKeyboardButton("💳Оплатить", callback_data="pay"), InlineKeyboardButton("След. ▶", callback_data="next"))
 
         await bot.send_media_group(message.chat.id, media=photos_info)
         await message.answer(message_text, reply_markup=keyboard)
