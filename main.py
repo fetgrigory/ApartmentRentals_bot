@@ -135,7 +135,7 @@ async def get_next_apartment_data(message: types.Message):
         message_text = f"Описание квартиры: {description}\nЦена: {price}"
 
         keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("Предыдущая", callback_data="prev"), InlineKeyboardButton("Следующая", callback_data="next"))
+        keyboard.add(InlineKeyboardButton("Предыдущая", callback_data="prev"), InlineKeyboardButton("Оплатить", callback_data="pay"), InlineKeyboardButton("Следующая", callback_data="next"))
 
         await bot.send_media_group(message.chat.id, media=photos_info)
         await message.answer(message_text, reply_markup=keyboard)
@@ -158,6 +158,10 @@ async def next_apartment(callback_query: types.CallbackQuery):
         total_records = cursor.fetchone()[0]
         USER_DATA['apartment_index'] = min(index + 1, total_records - 1)
         await get_next_apartment_data(callback_query.message)
+
+@dp.callback_query_handler(text="pay")
+async def pay_for_apartment(callback_query: types.CallbackQuery):
+    await callback_query.answer("Оплата прошла успешно! Спасибо за покупку!")
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
