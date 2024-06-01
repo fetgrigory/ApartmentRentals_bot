@@ -14,6 +14,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 import sqlite3
 import datetime
+from aiogram.types import ContentType
 load_dotenv()  # Load environment variables from a .env file.
 
 
@@ -161,8 +162,32 @@ async def next_apartment(callback_query: types.CallbackQuery):
 
 @dp.callback_query_handler(text="pay")
 async def pay_for_apartment(callback_query: types.CallbackQuery):
-    await callback_query.answer("Оплата прошла успешно! Спасибо за покупку!")
+    chat_id = callback_query.from_user.id
+    title = "Аренда квартиры"
+    description = "Аренда квартиры"
+    invoice_payload = "month_sub"
+    provider_token = os.getenv('PAYMENTS_TOKEN')
+    currency = "RUB"
+    prices = [types.LabeledPrice(label='Subscription', amount=3000*100)]
 
+    await bot.send_invoice(chat_id=chat_id,
+                           title=title,
+                           description=description,
+                           payload=invoice_payload,
+                           provider_token=provider_token,
+                           currency=currency,
+                           prices=prices)
+@dp.pre_checkout_query_handler(lambda query: True)
+async def pre_checkout_query(pre_checkout_q: types.PreCheckoutQuery):
+    await bot.answer_pre_checkout_query(pre_checkout_q.id, ok=True)
+@dp.message_handler(content_types=ContentType.SUCCESSFUL_PAYMENT)
+async def successful_payment(message: types.Message):
+    print("SUCCESSFUL PAYMENT:")
+    payment_info = message.successful_payment.to_python()
+    for k, v in payment_info.items():
+        print(f"{k} = {v}")
+    await bot.send_message(message.chat.id,
+                           f"Платёж на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошел успешно!!!")
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.run_until_complete(dp.start_polling())
