@@ -49,11 +49,11 @@ async def start(message: types.Message):
     USER_DATA.clear()
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
     if message.from_user.id == int(os.getenv('ADMIN_ID')):
-        keyboard.row("Админ-панель", "🛍Каталог")
-        keyboard.row("Наш сайт")
+        keyboard.row("🛠️Админ-панель", "🛍Каталог")
+        keyboard.row("🌐 Наш сайт")
     else:
         keyboard.add("🛍Каталог")
-        keyboard.add("Наш сайт")
+        keyboard.add("🌐 Наш сайт")
         keyboard.row("☎️Контакты")
 
     me = await bot.get_me()
@@ -64,7 +64,7 @@ async def start(message: types.Message):
 # Admin panel message handler
 
 
-@dp.message_handler(lambda message: message.text == "Админ-панель")
+@dp.message_handler(lambda message: message.text == "🛠️Админ-панель")
 async def admin_panel_handler(message: types.Message):
     if message.from_user.id == int(os.getenv('ADMIN_ID')):
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -82,7 +82,7 @@ async def get_apartment_data_handler(message: types.Message):
     await get_next_apartment_data(message)
 
 # Website message handler
-@dp.message_handler(text='Наш сайт')
+@dp.message_handler(text='🌐 Наш сайт')
 async def website(message: types.Message):
     await message.answer('Сожалею, но у нас пока нет сайта')
 
