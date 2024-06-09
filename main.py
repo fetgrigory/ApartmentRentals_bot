@@ -62,6 +62,8 @@ async def start(message: types.Message):
                          parse_mode='html', reply_markup=keyboard)
 
 # Admin panel message handler
+
+
 @dp.message_handler(lambda message: message.text == "🛠️Админ-панель")
 async def admin_panel_handler(message: types.Message):
     if message.from_user.id == int(os.getenv('ADMIN_ID')):
@@ -111,6 +113,8 @@ async def handle_photo(message: types.Message):
         await ask_next_question(message)
 
 # Add apartment message handler
+
+
 @dp.message_handler()
 async def add_apartment(message: types.Message):
     answer = message.text
@@ -120,6 +124,8 @@ async def add_apartment(message: types.Message):
         await ask_next_question(message)
 
 # Save apartment data function
+
+
 async def save_apartment_data(message: types.Message):
     current_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     data = [
@@ -135,6 +141,7 @@ async def save_apartment_data(message: types.Message):
     await message.answer("Данные о квартире успешно сохранены!")
 
 # Get next apartment data function
+
 async def get_next_apartment_data(message: types.Message):
     conn = sqlite3.connect('catalog.db')
     cursor.execute("SELECT * FROM catalog")
@@ -163,6 +170,7 @@ async def get_next_apartment_data(message: types.Message):
         USER_DATA['apartment_index'] = index
 
 # Previous apartment callback query handler
+
 @dp.callback_query_handler(text="prev")
 async def prev_apartment(callback_query: types.CallbackQuery):
     if 'apartment_index' in USER_DATA:
@@ -189,7 +197,6 @@ async def pay_for_apartment(callback_query: types.CallbackQuery):
     description = "Аренда квартиры"
     invoice_payload = "month_sub"
     provider_token = os.getenv('PAYMENTS_TOKEN')
-
     # Querying the price from the database
     cursor.execute("SELECT price FROM catalog WHERE id=?", (USER_DATA['apartment_index']+1,))
     price = cursor.fetchone()
@@ -219,7 +226,6 @@ async def successful_payment(message: types.Message):
         print(f"{k} = {v}")
     await bot.send_message(message.chat.id,
                            f"Платёж на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошел успешно!!!")
-
 # Starting the polling loop
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
