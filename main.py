@@ -16,7 +16,6 @@ import sqlite3
 import datetime
 from aiogram.types import ContentType
 load_dotenv()  # Load environment variables from a .env file.
-
 # Creating a Telegram bot and dispatcher
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot=bot)
@@ -62,15 +61,13 @@ async def start(message: types.Message):
                          parse_mode='html', reply_markup=keyboard)
 
 # Admin panel message handler
-
-
 @dp.message_handler(lambda message: message.text == "🛠️Админ-панель")
 async def admin_panel_handler(message: types.Message):
     if message.from_user.id == int(os.getenv('ADMIN_ID')):
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
         keyboard.add("Добавить данные")
         await message.answer("Добро пожаловать в админ-панель!", reply_markup=keyboard)
-
+        
 # Add data message handler
 @dp.message_handler(lambda message: message.text == "Добавить данные")
 async def add_data_handler(message: types.Message):
@@ -113,8 +110,6 @@ async def handle_photo(message: types.Message):
         await ask_next_question(message)
 
 # Add apartment message handler
-
-
 @dp.message_handler()
 async def add_apartment(message: types.Message):
     answer = message.text
@@ -124,8 +119,6 @@ async def add_apartment(message: types.Message):
         await ask_next_question(message)
 
 # Save apartment data function
-
-
 async def save_apartment_data(message: types.Message):
     current_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     data = [
@@ -140,8 +133,7 @@ async def save_apartment_data(message: types.Message):
     conn.commit()
     await message.answer("Данные о квартире успешно сохранены!")
 
-# Get next apartment data function
-
+#  Get next apartment data function
 async def get_next_apartment_data(message: types.Message):
     conn = sqlite3.connect('catalog.db')
     cursor.execute("SELECT * FROM catalog")
@@ -162,15 +154,25 @@ async def get_next_apartment_data(message: types.Message):
         message_text = f"Описание квартиры: {description}\nЦена: {price}"
 
         keyboard = InlineKeyboardMarkup()
-        keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"), InlineKeyboardButton("💳Оплатить", callback_data="pay"), InlineKeyboardButton("След. ▶", callback_data="next"))
+        if 'added_button' not in USER_DATA:
+            keyboard.add(InlineKeyboardButton("Добавить", callback_data="add"))
+        else:
+            keyboard.add(InlineKeyboardButton("💳Оплатить", callback_data="pay"))
+        keyboard.add(InlineKeyboardButton("След. ▶", callback_data="next"))
+        keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"))
 
         await bot.send_media_group(message.chat.id, media=photos_info)
         await message.answer(message_text, reply_markup=keyboard)
 
         USER_DATA['apartment_index'] = index
 
-# Previous apartment callback query handler
+# Handler for the add button
+@dp.callback_query_handler(text="add")
+async def add_button(callback_query: types.CallbackQuery):
+    USER_DATA['added_button'] = True
+    await get_next_apartment_data(callback_query.message)
 
+# Handler for the previous apartment button
 @dp.callback_query_handler(text="prev")
 async def prev_apartment(callback_query: types.CallbackQuery):
     if 'apartment_index' in USER_DATA:
@@ -178,7 +180,7 @@ async def prev_apartment(callback_query: types.CallbackQuery):
         USER_DATA['apartment_index'] = max(index - 1, 0)
         await get_next_apartment_data(callback_query.message)
 
-# Next apartment callback query handler
+# Handler for the next apartment button
 @dp.callback_query_handler(text="next")
 async def next_apartment(callback_query: types.CallbackQuery):
     if 'apartment_index' in USER_DATA:
@@ -211,7 +213,6 @@ async def pay_for_apartment(callback_query: types.CallbackQuery):
                            provider_token=provider_token,
                            currency=currency,
                            prices=prices)
-
 # Pre-checkout query handler
 @dp.pre_checkout_query_handler(lambda query: True)
 async def pre_checkout_query(pre_checkout_q: types.PreCheckoutQuery):
