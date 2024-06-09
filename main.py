@@ -67,7 +67,7 @@ async def admin_panel_handler(message: types.Message):
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
         keyboard.add("Добавить данные")
         await message.answer("Добро пожаловать в админ-панель!", reply_markup=keyboard)
-        
+
 # Add data message handler
 @dp.message_handler(lambda message: message.text == "Добавить данные")
 async def add_data_handler(message: types.Message):
@@ -133,7 +133,7 @@ async def save_apartment_data(message: types.Message):
     conn.commit()
     await message.answer("Данные о квартире успешно сохранены!")
 
-#  Get next apartment data function
+# Get next apartment data function
 async def get_next_apartment_data(message: types.Message):
     conn = sqlite3.connect('catalog.db')
     cursor.execute("SELECT * FROM catalog")
@@ -170,6 +170,21 @@ async def get_next_apartment_data(message: types.Message):
 @dp.callback_query_handler(text="add")
 async def add_button(callback_query: types.CallbackQuery):
     USER_DATA['added_button'] = True
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
+    keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
+    await bot.edit_message_reply_markup(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, reply_markup=keyboard)
+
+# Handler for adding days
+@dp.callback_query_handler(text="add_days")
+async def add_days(callback_query: types.CallbackQuery):
+    # Here you can implement the logic to add days to the rental period
+    await get_next_apartment_data(callback_query.message)
+
+# Handler for subtracting days
+@dp.callback_query_handler(text="subtract_days")
+async def subtract_days(callback_query: types.CallbackQuery):
+    # Here you can implement the logic to subtract days from the rental period
     await get_next_apartment_data(callback_query.message)
 
 # Handler for the previous apartment button
@@ -213,6 +228,7 @@ async def pay_for_apartment(callback_query: types.CallbackQuery):
                            provider_token=provider_token,
                            currency=currency,
                            prices=prices)
+
 # Pre-checkout query handler
 @dp.pre_checkout_query_handler(lambda query: True)
 async def pre_checkout_query(pre_checkout_q: types.PreCheckoutQuery):
@@ -227,6 +243,7 @@ async def successful_payment(message: types.Message):
         print(f"{k} = {v}")
     await bot.send_message(message.chat.id,
                            f"Платёж на сумму {message.successful_payment.total_amount // 100} {message.successful_payment.currency} прошел успешно!!!")
+
 # Starting the polling loop
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
