@@ -156,16 +156,13 @@ async def get_next_apartment_data(message: types.Message):
         keyboard = InlineKeyboardMarkup()
         if 'added_button' not in USER_DATA:
             keyboard.add(InlineKeyboardButton("Добавить", callback_data="add"))
-        else:
-            keyboard.add(InlineKeyboardButton("💳Оплатить", callback_data="pay"))
-        keyboard.add(InlineKeyboardButton("След. ▶", callback_data="next"))
-        keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"))
+            keyboard.add(InlineKeyboardButton("След. ▶", callback_data="next"))
+            keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"))
 
         await bot.send_media_group(message.chat.id, media=photos_info)
         await message.answer(message_text, reply_markup=keyboard)
 
         USER_DATA['apartment_index'] = index
-
 # Handler for the add button
 @dp.callback_query_handler(text="add")
 async def add_button(callback_query: types.CallbackQuery):
@@ -173,21 +170,10 @@ async def add_button(callback_query: types.CallbackQuery):
     keyboard = InlineKeyboardMarkup()
     keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
     keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
+    keyboard.add(InlineKeyboardButton("💳Оплатить", callback_data="pay"))
     await bot.edit_message_reply_markup(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, reply_markup=keyboard)
 
-# Handler for adding days
-@dp.callback_query_handler(text="add_days")
-async def add_days(callback_query: types.CallbackQuery):
-    # Here you can implement the logic to add days to the rental period
-    await get_next_apartment_data(callback_query.message)
-
-# Handler for subtracting days
-@dp.callback_query_handler(text="subtract_days")
-async def subtract_days(callback_query: types.CallbackQuery):
-    # Here you can implement the logic to subtract days from the rental period
-    await get_next_apartment_data(callback_query.message)
-
-# Handler for the previous apartment button
+    # Handler for the previous apartment button
 @dp.callback_query_handler(text="prev")
 async def prev_apartment(callback_query: types.CallbackQuery):
     if 'apartment_index' in USER_DATA:
@@ -205,6 +191,39 @@ async def next_apartment(callback_query: types.CallbackQuery):
         total_records = cursor.fetchone()[0]
         USER_DATA['apartment_index'] = min(index + 1, total_records - 1)
         await get_next_apartment_data(callback_query.message)
+
+
+# Handler for adding days
+@dp.callback_query_handler(text="add_days")
+async def add_days(callback_query: types.CallbackQuery):
+    global USER_DATA
+    if 'apartment_index' in USER_DATA:
+        index = USER_DATA['apartment_index']
+        cursor.execute("SELECT price FROM catalog WHERE id=?", (index+1,))
+        price = cursor.fetchone()[0]
+        USER_DATA['rent_days'] = USER_DATA.get('rent_days', 1) + 1
+        new_price = int(price) * USER_DATA['rent_days']
+        text = f"Новое количество дней: {USER_DATA['rent_days']}\nОбщая сумма к оплате: {new_price} RUB"
+        keyboard = InlineKeyboardMarkup()
+        keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
+        keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
+        await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, text=text, reply_markup=keyboard)
+
+# Handler for subtracting days
+@dp.callback_query_handler(text="subtract_days")
+async def subtract_days(callback_query: types.CallbackQuery):
+    global USER_DATA
+    if 'apartment_index' in USER_DATA:
+        index = USER_DATA['apartment_index']
+        cursor.execute("SELECT price FROM catalog WHERE id=?", (index+1,))
+        price = cursor.fetchone()[0]
+        USER_DATA['rent_days'] = max(USER_DATA.get('rent_days', 1) - 1, 1)
+        new_price = int(price) * USER_DATA['rent_days']
+        text = f"Новое количество дней: {USER_DATA['rent_days']}\nОбщая сумма к оплате: {new_price} RUB"
+        keyboard = InlineKeyboardMarkup()
+        keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
+        keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
+        await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, text=text, reply_markup=keyboard)
 
 # Pay for apartment callback query handler
 @dp.callback_query_handler(text="pay")
