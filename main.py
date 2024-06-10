@@ -240,7 +240,7 @@ async def pay_for_apartment(callback_query: types.CallbackQuery):
     price = cursor.fetchone()
 
     currency = "RUB"
-    new_price = int(price[0]) * USER_DATA['rent_days']
+    new_price = int(price[0]) * max(USER_DATA.get('rent_days', 1), 1)
     prices = [types.LabeledPrice(label='Subscription', amount=new_price*100)]
     await bot.send_invoice(chat_id=chat_id,
                            title=title,
