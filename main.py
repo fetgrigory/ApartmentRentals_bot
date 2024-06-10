@@ -150,7 +150,7 @@ async def get_next_apartment_data(message: types.Message):
         description = record[5]
         price = record[6]
 
-        message_text = f"Описание квартиры: {description}\nЦена: {price}"
+        message_text = f"Описание квартиры: {description}\nЦена(в сутки): {price}"
 
         keyboard = InlineKeyboardMarkup()
         if 'added_button' not in USER_DATA:
@@ -202,7 +202,7 @@ async def add_days(callback_query: types.CallbackQuery):
         price = cursor.fetchone()[0]
         USER_DATA['rent_days'] = USER_DATA.get('rent_days', 1) + 1
         new_price = int(price) * USER_DATA['rent_days']
-        text = f"Новое количество дней: {USER_DATA['rent_days']}\nОбщая сумма к оплате: {new_price} RUB"
+        text = f" Количество дней аренды: {USER_DATA['rent_days']}\nОбщая сумма к оплате: {new_price} RUB"
         keyboard = InlineKeyboardMarkup()
         keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
         keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
