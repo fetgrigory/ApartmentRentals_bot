@@ -53,7 +53,7 @@ async def start(message: types.Message):
     else:
         keyboard.add("🛍Каталог")
         keyboard.add("🌐 Наш сайт")
-        keyboard.row("☎️Контакты")
+        keyboard.row("☎️ Контакты")
 
     me = await bot.get_me()
     await message.answer(f"Здравствуйте, {message.from_user.first_name}!\n"
