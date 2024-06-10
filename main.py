@@ -207,6 +207,7 @@ async def add_days(callback_query: types.CallbackQuery):
         keyboard = InlineKeyboardMarkup()
         keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
         keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
+        keyboard.add(InlineKeyboardButton("💳Оплатить", callback_data="pay"))
         await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, text=text, reply_markup=keyboard)
 
 # Handler for subtracting days
@@ -223,6 +224,7 @@ async def subtract_days(callback_query: types.CallbackQuery):
         keyboard = InlineKeyboardMarkup()
         keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
         keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
+        keyboard.add(InlineKeyboardButton("💳Оплатить", callback_data="pay"))  # Добавляем кнопку оплаты
         await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, text=text, reply_markup=keyboard)
 
 # Pay for apartment callback query handler
