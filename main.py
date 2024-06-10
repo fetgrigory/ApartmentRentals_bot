@@ -52,8 +52,7 @@ async def start(message: types.Message):
         keyboard.row("🌐 Наш сайт")
     else:
         keyboard.add("🛍Каталог")
-        keyboard.add("🌐 Наш сайт")
-        keyboard.row("☎️ Контакты")
+        keyboard.row("🌐 Наш сайт", "☎️ Контакты")
 
     me = await bot.get_me()
     await message.answer(f"Здравствуйте, {message.from_user.first_name}!\n"
@@ -155,7 +154,7 @@ async def get_next_apartment_data(message: types.Message):
 
         keyboard = InlineKeyboardMarkup()
         if 'added_button' not in USER_DATA:
-            keyboard.add(InlineKeyboardButton("Добавить", callback_data="add"))
+            keyboard.add(InlineKeyboardButton("Забронировать✅", callback_data="add"))
             keyboard.add(InlineKeyboardButton("След. ▶", callback_data="next"))
             keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"))
 
