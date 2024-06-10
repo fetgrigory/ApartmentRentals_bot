@@ -219,7 +219,7 @@ async def subtract_days(callback_query: types.CallbackQuery):
         price = cursor.fetchone()[0]
         USER_DATA['rent_days'] = max(USER_DATA.get('rent_days', 1) - 1, 1)
         new_price = int(price) * USER_DATA['rent_days']
-        text = f"Новое количество дней: {USER_DATA['rent_days']}\nОбщая сумма к оплате: {new_price} RUB"
+        text = f"Количество дней аренды: {USER_DATA['rent_days']}\nОбщая сумма к оплате: {new_price} RUB"
         keyboard = InlineKeyboardMarkup()
         keyboard.add(InlineKeyboardButton("+1", callback_data="add_days"))
         keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
