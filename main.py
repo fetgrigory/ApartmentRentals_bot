@@ -64,13 +64,36 @@ async def start(message: types.Message):
 async def admin_panel_handler(message: types.Message):
     if message.from_user.id == int(os.getenv('ADMIN_ID')):
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-        keyboard.add("Добавить данные")
+        keyboard.add("Добавить данные", "Редактировать каталог")
         await message.answer("Добро пожаловать в админ-панель!", reply_markup=keyboard)
+# Edit catalog message handler
+@dp.message_handler(lambda message: message.text == "Редактировать каталог")
+async def edit_catalog_handler(message: types.Message):
+    cursor.execute("SELECT * FROM catalog")
+    data = cursor.fetchall()
+
+    for record in data:
+        photos_info = []
+        for i in range(2, 5):
+            photo_id = record[i]
+            photos_info.append(types.InputMediaPhoto(media=photo_id, caption="Фото квартиры"))
+
+        description = record[5]
+        price = record[6]
+
+        message_text = f"Описание квартиры: {description}\nЦена (в сутки): {price}"
+
+        keyboard = InlineKeyboardMarkup()
+        keyboard.add(InlineKeyboardButton("Изменить", callback_data="edit"), InlineKeyboardButton("Удалить", callback_data="delete"))
+
+        await bot.send_media_group(message.chat.id, media=photos_info)
+        await message.answer(message_text, reply_markup=keyboard)
 
 # Add data message handler
 @dp.message_handler(lambda message: message.text == "Добавить данные")
 async def add_data_handler(message: types.Message):
     await ask_next_question(message)
+
 
 # Catalog message handler
 @dp.message_handler(lambda message: message.text == "🛍Каталог")
