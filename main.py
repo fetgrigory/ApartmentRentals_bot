@@ -89,6 +89,19 @@ async def edit_catalog_handler(message: types.Message):
         await bot.send_media_group(message.chat.id, media=photos_info)
         await message.answer(message_text, reply_markup=keyboard)
 
+
+# "delete" message handler
+@dp.callback_query_handler(text="delete")
+async def delete_apartment_handler(callback_query: types.CallbackQuery):
+    conn = sqlite3.connect('catalog.db')
+    cursor = conn.cursor()
+    # get the index of the apartment
+    index = USER_DATA.get('apartment_index', 0)
+    # Deleting the apartment entry from the database
+    cursor.execute("DELETE FROM catalog WHERE id=?", (index + 1,))
+    conn.commit()
+    await bot.send_message(callback_query.message.chat.id, "Квартира успешно удалена из каталога!")
+
 # Add data message handler
 @dp.message_handler(lambda message: message.text == "Добавить данные")
 async def add_data_handler(message: types.Message):
