@@ -155,13 +155,16 @@ async def get_next_apartment_data(message: types.Message):
         keyboard = InlineKeyboardMarkup()
         if 'added_button' not in USER_DATA:
             keyboard.add(InlineKeyboardButton("Забронировать✅", callback_data="add"))
-            keyboard.add(InlineKeyboardButton("След. ▶", callback_data="next"))
-            keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"))
+            if index > 0:
+                keyboard.add(InlineKeyboardButton("◀ Пред.", callback_data="prev"))
+            if index < len(data) - 1:
+                keyboard.add(InlineKeyboardButton("След. ▶", callback_data="next"))
 
         await bot.send_media_group(message.chat.id, media=photos_info)
         await message.answer(message_text, reply_markup=keyboard)
 
         USER_DATA['apartment_index'] = index
+
 # Handler for the add button
 @dp.callback_query_handler(text="add")
 async def add_button(callback_query: types.CallbackQuery):
@@ -172,7 +175,7 @@ async def add_button(callback_query: types.CallbackQuery):
     keyboard.add(InlineKeyboardButton("💳Оплатить", callback_data="pay"))
     await bot.edit_message_reply_markup(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, reply_markup=keyboard)
 
-    # Handler for the previous apartment button
+# Handler for the previous apartment button
 @dp.callback_query_handler(text="prev")
 async def prev_apartment(callback_query: types.CallbackQuery):
     if 'apartment_index' in USER_DATA:
@@ -190,7 +193,6 @@ async def next_apartment(callback_query: types.CallbackQuery):
         total_records = cursor.fetchone()[0]
         USER_DATA['apartment_index'] = min(index + 1, total_records - 1)
         await get_next_apartment_data(callback_query.message)
-
 
 # Handler for adding days
 @dp.callback_query_handler(text="add_days")
