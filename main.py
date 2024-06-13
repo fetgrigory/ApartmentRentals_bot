@@ -277,31 +277,31 @@ async def edit_apartment_handler(callback_query: types.CallbackQuery):
 
     await bot.send_message(callback_query.message.chat.id, "Выберите, что вы хотите изменить:", reply_markup=keyboard)
 
-# Обработчик изменения фото 1
+# Photo change handler 1
 @dp.callback_query_handler(text="edit_photo1")
 async def update_photo1_handler(callback_query: types.CallbackQuery):
     await callback_query.message.answer("Загрузите новое фото 1:")
     USER_DATA['update_photo'] = 'photo1'
 
-# Обработчик изменения фото 2
+# # Photo change handler  2
 @dp.callback_query_handler(text="edit_photo2")
 async def update_photo2_handler(callback_query: types.CallbackQuery):
     await callback_query.message.answer("Загрузите новое фото 2:")
     USER_DATA['update_photo'] = 'photo2'
 
-# Обработчик изменения фото 3
+# # Photo change handler  3
 @dp.callback_query_handler(text="edit_photo3")
 async def update_photo3_handler(callback_query: types.CallbackQuery):
     await callback_query.message.answer("Загрузите новое фото 3:")
     USER_DATA['update_photo'] = 'photo3'
 
-# Обработчик изменения цены
+# Price change Handler
 @dp.callback_query_handler(text="edit_price")
 async def edit_price_handler(callback_query: types.CallbackQuery):
     await callback_query.message.answer("Введите новую цену:")
     USER_DATA['update_price'] = True
 
-# Обработчик изменения описания
+# Description change handler
 @dp.callback_query_handler(text="edit_description")
 async def edit_description_handler(callback_query: types.CallbackQuery):
     await callback_query.message.answer("Введите новое описание:")
