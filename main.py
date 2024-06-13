@@ -263,6 +263,49 @@ async def subtract_days(callback_query: types.CallbackQuery):
         keyboard.add(InlineKeyboardButton("-1", callback_data="subtract_days"))
         keyboard.add(InlineKeyboardButton("💳Оплатить", callback_data="pay"))
         await bot.edit_message_text(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id, text=text, reply_markup=keyboard)
+# Обработчик кнопки "Изменить"
+@dp.callback_query_handler(text="edit")
+async def edit_apartment_handler(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(InlineKeyboardButton("Изменить фото 1", callback_data="edit_photo1"))
+    keyboard.add(InlineKeyboardButton("Изменить фото 2", callback_data="edit_photo2"))
+    keyboard.add(InlineKeyboardButton("Изменить фото 3", callback_data="edit_photo3"))
+    keyboard.add(InlineKeyboardButton("Изменить цену", callback_data="edit_price"))
+    keyboard.add(InlineKeyboardButton("Изменить описание", callback_data="edit_description"))
+
+    await bot.send_message(callback_query.message.chat.id, "Выберите, что вы хотите изменить:", reply_markup=keyboard)
+
+# Обработчик изменения фото 1
+@dp.callback_query_handler(text="edit_photo1")
+async def update_photo1_handler(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("Загрузите новое фото 1:")
+    USER_DATA['update_photo'] = 'photo1'
+
+# Обработчик изменения фото 2
+@dp.callback_query_handler(text="edit_photo2")
+async def update_photo2_handler(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("Загрузите новое фото 2:")
+    USER_DATA['update_photo'] = 'photo2'
+
+# Обработчик изменения фото 3
+@dp.callback_query_handler(text="edit_photo3")
+async def update_photo3_handler(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("Загрузите новое фото 3:")
+    USER_DATA['update_photo'] = 'photo3'
+
+# Обработчик изменения цены
+@dp.callback_query_handler(text="edit_price")
+async def edit_price_handler(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("Введите новую цену:")
+    USER_DATA['update_price'] = True
+
+# Обработчик изменения описания
+@dp.callback_query_handler(text="edit_description")
+async def edit_description_handler(callback_query: types.CallbackQuery):
+    await callback_query.message.answer("Введите новое описание:")
+    USER_DATA['update_description'] = True
 
 # Pay for apartment callback query handler
 @dp.callback_query_handler(text="pay")
