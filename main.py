@@ -133,8 +133,9 @@ async def callback_query_viewing_atelier(callback_query: types.CallbackQuery):
     if callback_query.data == 'atelier':
         items = await db.get_items_by_type('atelier')
         for item in items:
-            caption = f"Название: {item[1]}\nОписание: {item[2]}\nЦена: {item[3]}\nВидео:{item[4]}"
-            await bot.send_message(chat_id=callback_query.from_user.id, text=caption, reply_markup=kb.product_list)
+            video = item[4]
+            caption = f"Название: {item[1]}\nОписание: {item[2]}\nЦена: {item[3]}"
+            await bot.send_video(chat_id=callback_query.from_user.id, video=video, caption=caption, reply_markup=kb.product_list)
 # Starting the polling loop
 if __name__ == '__main__':
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
