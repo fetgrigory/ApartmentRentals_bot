@@ -26,7 +26,7 @@ async def cmd_start_db(user_id):
         db.commit()
 
 
-async def add_item(state):
+async def add_apartment(state):
     async with state.proxy() as data:
         cur.execute("INSERT INTO catalog (address, description, price, video, type) VALUES (?, ?, ?, ?, ?)",
                     (data['address'], data['description'], data['price'], data['video'], data['type']))
