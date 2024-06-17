@@ -132,7 +132,8 @@ async def add_item_video(message: types.Message, state: FSMContext):
 async def callback_query_viewing_atelier(callback_query: types.CallbackQuery):
     if callback_query.data == 'atelier':
         items = await db.get_items_by_type('atelier')
-        for item in items:
+        if items:
+            item = items[0]
             video = item[4]
             caption = f"Адрес: {item[1]}\nОписание: {item[2]}\nЦена: {item[3]}"
             await bot.send_video(chat_id=callback_query.from_user.id, video=video, caption=caption, reply_markup=kb.product_list)
