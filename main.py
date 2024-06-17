@@ -129,7 +129,7 @@ async def add_item_video(message: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler()
-async def callback_query_keyboard(callback_query: types.CallbackQuery):
+async def callback_query_viewing_atelier(callback_query: types.CallbackQuery):
     if callback_query.data == 'atelier':
         items = await db.get_items_by_type('atelier')
         for item in items:
