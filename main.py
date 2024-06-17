@@ -137,6 +137,9 @@ async def callback_query_viewing_atelier(callback_query: types.CallbackQuery):
             video = apartment[4]
             caption = f"Адрес: {apartment[1]}\nОписание: {apartment[2]}\nЦена: {apartment[3]}"
             await bot.send_video(chat_id=callback_query.from_user.id, video=video, caption=caption, reply_markup=kb.product_list)
+    if callback_query.data == 'selected_apartment':
+        message_id = callback_query.message.message_id
+        await bot.edit_message_reply_markup(chat_id=callback_query.from_user.id, message_id=message_id, reply_markup=kb.pay_list)
 # Starting the polling loop
 if __name__ == '__main__':
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
