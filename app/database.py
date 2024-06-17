@@ -32,7 +32,7 @@ async def add_item(state):
                     (data['address'], data['description'], data['price'], data['video'], data['type']))
         db.commit()
 
-async def get_items_by_type(item_type):
+async def get_apartment_by_type(item_type):
     cur.execute("SELECT * FROM catalog WHERE type = ?", (item_type,))
-    items = cur.fetchall()
-    return items
+    apartment = cur.fetchall()
+    return apartment
