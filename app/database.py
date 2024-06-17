@@ -11,8 +11,8 @@ async def db_start():
                 "cart_id TEXT)")
     cur.execute("CREATE TABLE IF NOT EXISTS catalog("
                 "i_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                "name TEXT,"
-                "desc TEXT, "
+                "address TEXT,"
+                "description TEXT, "
                 "price TEXT, "
                 "video TEXT, "
                 "type TEXT)")
@@ -28,8 +28,8 @@ async def cmd_start_db(user_id):
 
 async def add_item(state):
     async with state.proxy() as data:
-        cur.execute("INSERT INTO catalog (name, desc, price, video, type) VALUES (?, ?, ?, ?, ?)",
-                    (data['name'], data['desc'], data['price'], data['video'], data['type']))
+        cur.execute("INSERT INTO catalog (address, description, price, video, type) VALUES (?, ?, ?, ?, ?)",
+                    (data['address'], data['description'], data['price'], data['video'], data['type']))
         db.commit()
 
 async def get_items_by_type(item_type):

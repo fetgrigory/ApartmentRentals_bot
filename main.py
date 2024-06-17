@@ -28,8 +28,8 @@ async def on_startup(_):
 
 class NewOrder(StatesGroup):
     type = State()
-    name = State()
-    desc = State()
+    address = State()
+    description = State()
     price = State()
     video = State()
 
@@ -90,18 +90,18 @@ async def add_item_type(call: types.CallbackQuery, state: FSMContext):
     await NewOrder.next()
 
 
-@dp.message_handler(state=NewOrder.name)
-async def add_item_name(message: types.Message, state: FSMContext):
+@dp.message_handler(state=NewOrder.address)
+async def add_item_address(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['name'] = message.text
+        data['address'] = message.text
     await message.answer('Введите описание квартиры')
     await NewOrder.next()
 
 
-@dp.message_handler(state=NewOrder.desc)
-async def add_item_desc(message: types.Message, state: FSMContext):
+@dp.message_handler(state=NewOrder.description)
+async def add_item_description(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['desc'] = message.text
+        data['description'] = message.text
     await message.answer('Введите цену(в сутки)')
     await NewOrder.next()
 
@@ -134,7 +134,7 @@ async def callback_query_viewing_atelier(callback_query: types.CallbackQuery):
         items = await db.get_items_by_type('atelier')
         for item in items:
             video = item[4]
-            caption = f"Название: {item[1]}\nОписание: {item[2]}\nЦена: {item[3]}"
+            caption = f"Адрес: {item[1]}\nОписание: {item[2]}\nЦена: {item[3]}"
             await bot.send_video(chat_id=callback_query.from_user.id, video=video, caption=caption, reply_markup=kb.product_list)
 # Starting the polling loop
 if __name__ == '__main__':
