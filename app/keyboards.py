@@ -20,7 +20,7 @@ cancel.add('Отмена')
 
 product_list = InlineKeyboardMarkup(row_width=2)
 product_list.row(InlineKeyboardButton(text='◀ Пред.', callback_data='2-room apartment'),
-                 InlineKeyboardButton(text='Забронировать✅', callback_data='1-room apartment'),
+                 InlineKeyboardButton(text='Выбрать✅', callback_data='1-room apartment'),
                  InlineKeyboardButton(text='След. ▶', callback_data='3-room apartment'),
                  )
 
