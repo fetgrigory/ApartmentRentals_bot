@@ -23,4 +23,8 @@ product_list.row(InlineKeyboardButton(text='◀ Пред.', callback_data='2-roo
                  InlineKeyboardButton(text='Выбрать✅', callback_data='1-room apartment'),
                  InlineKeyboardButton(text='След. ▶', callback_data='3-room apartment'),
                  )
-
+pay_list = InlineKeyboardMarkup(row_width=2)
+pay_list.row(InlineKeyboardButton(text='+1', callback_data='2-room apartment'),
+             InlineKeyboardButton(text='💳Оплатить', callback_data='1-room apartment'),
+             InlineKeyboardButton(text='-1', callback_data='3-room apartment'),
+             )
