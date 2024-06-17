@@ -127,6 +127,14 @@ async def add_item_video(message: types.Message, state: FSMContext):
     await message.answer('Квартира успешно добавлена!', reply_markup=kb.admin_panel)
     await state.finish()
 
+
+@dp.callback_query_handler()
+async def callback_query_keyboard(callback_query: types.CallbackQuery):
+    if callback_query.data == 'atelier':
+        items = await db.get_items_by_type('atelier')
+        for item in items:
+            caption = f"Название: {item[1]}\nОписание: {item[2]}\nЦена: {item[3]}\nВидео:{item[4]}"
+            await bot.send_message(chat_id=callback_query.from_user.id, text=caption)
 # Starting the polling loop
 if __name__ == '__main__':
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)
