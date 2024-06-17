@@ -107,7 +107,7 @@ async def add_apartment_description(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=NewOrder.price)
-async def add_apartment_price(message: types.Message, state: FSMContext):    
+async def add_apartment_price(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['price'] = message.text
     await message.answer('Отправьте видео квартиры')
