@@ -1,7 +1,7 @@
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 
 main = ReplyKeyboardMarkup(resize_keyboard=True)
-main.add('🛍Каталог').add('☎️Контакты').add('🌐 Наш сайт')
+main.add('🛍Каталог').add('☎️Контакты').add('🌐Наш сайт')
 
 main_admin = ReplyKeyboardMarkup(resize_keyboard=True)
 main_admin.add('🛍Каталог').add('☎️Контакты').add('🛠️Админ-панель')

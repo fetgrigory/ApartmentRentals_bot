@@ -60,7 +60,7 @@ async def contacts(message: types.Message):
     await message.answer('Наш телефон: 8-901-133-00-00')
 
 
-@dp.message_handler(text='🌐 Наш сайт')
+@dp.message_handler(text='🌐Наш сайт')
 async def website(message: types.Message):
     await message.answer('Сожалею, но у нас пока нет сайта')
 
