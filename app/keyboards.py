@@ -15,6 +15,12 @@ catalog_list.add(InlineKeyboardButton(text='1 комнатная квартир�
                  InlineKeyboardButton(text='3 х комнатная квартира', callback_data='3-room apartment'),
                  InlineKeyboardButton(text='Студия', callback_data='atelier'),
                  )
-
 cancel = ReplyKeyboardMarkup(resize_keyboard=True)
 cancel.add('Отмена')
+
+product_list = InlineKeyboardMarkup(row_width=2)
+product_list.add(InlineKeyboardButton(text='Забронировать✅', callback_data='1-room apartment'),
+                 InlineKeyboardButton(text='◀ Пред.', callback_data='2-room apartment'),
+                 InlineKeyboardButton(text='След. ▶', callback_data='3-room apartment'),
+                 )
+
